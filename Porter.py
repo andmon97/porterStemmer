@@ -23,8 +23,11 @@ class Porter:
     def isVowel(self, word, i):
         return not(self.isConsonant(word, i))
 
+    """
+        CONDITION PART
+    """
 
-    # *S - if the stem ends with a particular letter
+    # *S - the stem ends with S (and similarly for the other letters).
     def endsWith(self, stem, letter):
         if stem.endswith(letter):
             return True
@@ -32,7 +35,7 @@ class Porter:
             return False
 
 
-    # *v* - rule that check if there is a vowel in the stem
+    # *v* - the stem contains a vowel.
     def containsVowel(self, stem):
         for letter in stem:
             if not self.consonant(letter):
@@ -40,11 +43,26 @@ class Porter:
         return False
 
 
-    # *d - rule that check if there is a sequence of double consonants in the stem
+    # *d - the stem ends with a double consonant (e.g. -TT, -SS).
     def doubleCons(self, stem):
         if len(stem) >= 2:
             if self.isConsonant(stem, -1) and self.isConsonant(stem, -2):
                 return True
+            else:
+                return False
+        else:
+            return False
+
+
+    # *o - the stem ends cvc, where the second c is not W, X or Y (e.g. -WIL, -HOP).
+    def cvc(self, word):
+        if len(word) >= 3:
+            lastConsonant = word[-1]
+            if self.isConsonant(word, -3) and self.isVowel(word, -2) and self.isConsonant(word, -1):
+                if lastConsonant != 'w' and lastConsonant != 'x' and lastConsonant != 'y':
+                    return True
+                else:
+                    return False
             else:
                 return False
         else:
@@ -82,6 +100,7 @@ class Porter:
 
 
     # obtain the lenght of the (VC) sequence from the form (the m param)
+    # m=2 => TROUBLES, PRIVATE, OATEN, ORRERY.
     def getM(self, word):
         form = self.wordForm(word)
         m = form.count('VC')
