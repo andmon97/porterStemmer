@@ -106,28 +106,107 @@ class Porter:
         m = form.count('VC')
         return m
 
-    def replace(self, orig, rem, rep):
-        result = orig.rfind(rem)
-        base = orig[:result]
-        replaced = base + rep
+    # replace the removePart with the replacePart in the word
+    def replace(self, word, removePart, replacePart):
+        position = word.rfind(removePart)
+        base = word[:position]
+        replaced = base + replacePart
         return replaced
 
-
-    def replaceM0(self, orig, rem, rep):
-        result = orig.rfind(rem)
-        base = orig[:result]
+    # replace the removePart with the replacePart in the word if M is > 0
+    def replaceM0(self, word, removePart, replacePart):
+        position = word.rfind(removePart)
+        base = word[:position]
         if self.getM(base) > 0:
-            replaced = base + rep
+            replaced = base + replacePart
             return replaced
         else:
-            return orig
+            return word
 
-
-    def replaceM1(self, orig, rem, rep):
-        result = orig.rfind(rem)
-        base = orig[:result]
+    # replace the removePart with the replacePart in the word if M is > 1
+    def replaceM1(self, word, removePart, replacePart):
+        position = word.rfind(removePart)
+        base = word[:position]
         if self.getM(base) > 1:
-            replaced = base + rep
+            replaced = base + replacePart
             return replaced
         else:
-            return orig
+            return word
+
+
+    """
+        STEP 1a:
+        - SSES -> SS (Example : caresses -> caress)
+        - IES -> I (Example : ponies -> poni ; ties -> ti)
+        - SS -> SS (Example : caress -> caress)
+        - S -> (Example : cats -> cat)
+    """
+    def step1a(self, word):
+        if word.endswith('sses'):
+            word = self.replace(word, 'sses', 'ss')
+        elif word.endswith('ies'):
+            word = self.replace(word, 'ies', 'i')
+        elif word.endswith('ss'):
+            word = self.replace(word, 'ss', 'ss')
+        elif word.endswith('s'):
+            word = self.replace(word, 's', '')
+        return word
+
+    """
+        STEP 1b:
+    - (m>0) EED -> EE (Example : feed -> feed ; agreed -> agree)
+    - (v) ED -> (Example : plastered -> plaster ; bled -> bled)
+    - (v) ING -> (Example : motoring -> motor ; sing -> sing)
+    - S -> (Example : cats -> cat)
+    If the second or third of the rules in Step 1b is successful, the following is done:
+    - AT -> ATE (Example : conflat(ed) -> conflate)
+    - BL -> BLE (Example : troubl(ed) -> trouble)
+    - IZ -> IZE (Example : siz(ed) -> size)
+    - S -> (Example : cats -> cat)
+    - (*d and not (*L or *S or *Z)) -> single letter (Example : hopp(ing) -> hop ; tann(ed) -> tan ; fall(ing) -> fall ;
+     hiss(ing) -> hiss ; fizz(ed) -> fizz)
+    - (m=1 and *o) -> E (Example : fail(ing) -> fail ; fil(ing) -> file)
+
+    The rule to map to a single letter causes the removal of one of the double letter pair. The -E is put back on -AT, 
+    -BL and -IZ, so that the suffixes -ATE, -BLE and -IZE can be recognised later. This E may be removed in step 4.
+    """
+    def step1b(self, word):
+        optionalStep = False
+        if word.endswith('eed'):
+            position = word.rfind('eed')
+            base = word[:position]
+            word = self.replaceM0(base, 'eed', 'ee')
+        elif word.endswith('ed'):
+            position = word.rfind('ed')
+            base = word[:position]
+            if self.containsVowel(base):
+                word = base #truncate the part ed
+                optionalStep = True     # the optional step will be executed
+        elif word.endswith('ing'):
+            position = word.rfind('ing')
+            base = word[:position]
+            if self.containsVowel(base):
+                word = base #truncate the part ed
+                optionalStep = True     # the optional step will be executed
+        if optionalStep:
+            if word.endswith('at') or word.endswith('bl') or word.endswith('iz'):
+                word += 'e'
+            elif self.doubleCons(word) and not self.endsWith(word, 'l') and not self.endsWith(word, 's') and not self.endsWith('z'):
+                word = word[:-1]
+            elif self.getM(word) == 1 and self.cvc(word):
+                word += 'e'
+        return word
+
+
+    """
+        STEP 1c:
+    - (\*v\*) Y -> I (Example : happy -> happi ; sky -> sky)
+    """
+    def step1c(self, word):
+        if word.endswith('y'):
+            position = word.rfind('y')
+            base = word[:position]
+            if self.containsVowel(base):
+                word = base
+                word += 'i'
+        return word
