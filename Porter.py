@@ -105,3 +105,29 @@ class Porter:
         form = self.wordForm(word)
         m = form.count('VC')
         return m
+
+    def replace(self, orig, rem, rep):
+        result = orig.rfind(rem)
+        base = orig[:result]
+        replaced = base + rep
+        return replaced
+
+
+    def replaceM0(self, orig, rem, rep):
+        result = orig.rfind(rem)
+        base = orig[:result]
+        if self.getM(base) > 0:
+            replaced = base + rep
+            return replaced
+        else:
+            return orig
+
+
+    def replaceM1(self, orig, rem, rep):
+        result = orig.rfind(rem)
+        base = orig[:result]
+        if self.getM(base) > 1:
+            replaced = base + rep
+            return replaced
+        else:
+            return orig
