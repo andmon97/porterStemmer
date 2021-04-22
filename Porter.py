@@ -210,3 +210,69 @@ class Porter:
                 word = base
                 word += 'i'
         return word
+
+    """
+        STEP 2:   
+    -(m>0) ATIONAL -> ATE (Example : relational -> relate
+    -(m>0) TIONAL -> TION (Example : conditional -> condition ; rational -> rational)
+    -(m>0) ENCI -> ENCE (Example : valenci -> valence)
+    -(m>0) ANCI -> ANCE (Example : hesitanci -> hesitance)
+    -(m>0) IZER -> IZE (Example : digitizer -> digitize)
+    -(m>0) ABLI -> ABLE (Example : conformabli -> conformable)
+    -(m>0) ALLI -> AL (Example : radicalli -> radical)
+    -(m>0) ENTLI -> ENT (differentli -> different)
+    -(m>0) ELI -> E (vileli -> vile)
+    -(m>0) OUSLI -> OUS (analogousli -> analogous)
+    -(m>0) IZATION -> IZE (vietnamization -> vietnamize)
+    -(m>0) ATION -> ATE (predication -> predicate)
+    -(m>0) ATOR -> ATE (operator -> operate)
+    -(m>0) ALISM -> AL (feudalism -> feudal)
+    -(m>0) IVENESS -> IVE (decisiveness -> decisive)
+    -(m>0) FULNESS -> FUL (hopefulness -> hopeful)
+    -(m>0) OUSNESS -> OUS (callousness -> callous)
+    -(m>0) ALITI -> AL (formaliti -> formal)
+    -(m>0) IVITI -> IVE (sensitiviti -> sensitive)
+    -(m>0) BILITI -> BLE (sensibiliti -> sensible)
+    """
+    def step2(self, word):
+        if word.endswith('ational'):
+            word = self.replaceM0(word, 'ational', 'ate')
+        elif word.endswith('tional'):
+            word = self.replaceM0(word, 'tional', 'tion')
+        elif word.endswith('enci'):
+            word = self.replaceM0(word, 'enci', 'ence')
+        elif word.endswith('anci'):
+            word = self.replaceM0(word, 'anci', 'ance')
+        elif word.endswith('izer'):
+            word = self.replaceM0(word, 'izer', 'ize')
+        elif word.endswith('abli'):
+            word = self.replaceM0(word, 'abli', 'able')
+        elif word.endswith('alli'):
+            word = self.replaceM0(word, 'alli', 'al')
+        elif word.endswith('entli'):
+            word = self.replaceM0(word, 'entli', 'ent')
+        elif word.endswith('eli'):
+            word = self.replaceM0(word, 'eli', 'e')
+        elif word.endswith('ousli'):
+            word = self.replaceM0(word, 'ousli', 'ous')
+        elif word.endswith('ization'):
+            word = self.replaceM0(word, 'ization', 'ize')
+        elif word.endswith('ation'):
+            word = self.replaceM0(word, 'ation', 'ate')
+        elif word.endswith('ator'):
+            word = self.replaceM0(word, 'ator', 'ate')
+        elif word.endswith('alism'):
+            word = self.replaceM0(word, 'alism', 'al')
+        elif word.endswith('iveness'):
+            word = self.replaceM0(word, 'iveness', 'ive')
+        elif word.endswith('fulness'):
+            word = self.replaceM0(word, 'fulness', 'ful')
+        elif word.endswith('ousness'):
+            word = self.replaceM0(word, 'ousness', 'ous')
+        elif word.endswith('aliti'):
+            word = self.replaceM0(word, 'aliti', 'al')
+        elif word.endswith('iviti'):
+            word = self.replaceM0(word, 'iviti', 'ive')
+        elif word.endswith('biliti'):
+            word = self.replaceM0(word, 'biliti', 'ble')
+        return word
