@@ -276,3 +276,98 @@ class Porter:
         elif word.endswith('biliti'):
             word = self.replaceM0(word, 'biliti', 'ble')
         return word
+
+
+    """
+        STEP 3:   
+    -(m>0) ICATE -> IC (Example : triplicate -> triplic)
+    -(m>0) ATIVE -> (Example : formative -> form)
+    -(m>0) ALIZE -> AL (Example : formalize -> formal)
+    -(m>0) ICITI -> IC (Example : electriciti -> electric))
+    -(m>0) ICAL -> IC (Example : electrical -> electric)
+    -(m>0) FUL -> (Example : hopeful -> hope)
+    -(m>0) NESS -> (Example : goodness -> good)
+    """
+    def step3(self, word):
+        if word.endswith('icate'):
+            word = self.replaceM0(word, 'icate', 'ic')
+        elif word.endswith('ative'):
+            word = self.replaceM0(word, 'ative', '')
+        elif word.endswith('alize'):
+            word = self.replaceM0(word, 'alize', 'al')
+        elif word.endswith('iciti'):
+            word = self.replaceM0(word, 'iciti', 'ic')
+        elif word.endswith('ical'):
+            word = self.replaceM0(word, 'ical', 'ic')
+        elif word.endswith('ful'):
+            word = self.replaceM0(word, 'ful', '')
+        elif word.endswith('ness'):
+            word = self.replaceM0(word, 'ness', '')
+        return word
+
+    """
+        STEP 4:   
+    -(m>1) AL -> (Example : revival -> reviv)
+    -(m>1) ANCE -> (Example : allowance -> allow)
+    -(m>1) ENCE -> (Example : inference -> infer)
+    -(m>1) ER -> (Example : airliner -> airlin)
+    -(m>1) IC -> (Example : gyroscopic -> gyroscop)
+    -(m>1) ABLE -> (Example : adjustable -> adjust)
+    -(m>1) IBLE -> (Example : defensible -> defens)
+    -(m>1) ANT -> (Example : irritant -> irrit)
+    -(m>1) EMENT -> (Example : replacement -> replac)
+    -(m>1) MENT -> (Example : adjustment -> adjust)
+    -(m>1) ENT -> (Example : dependent -> depend)
+    -(m>1 and (*S or *T)) ION -> (Example : adoption -> adopt)
+    -(m>1) OU -> (Example : homologou -> homolog)
+    -(m>1) ISM -> (Example : communism -> commun)
+    -(m>1) ATE -> (Example : activate -> activ)
+    -(m>1) ITI -> (Example : angulariti -> angular)
+    -(m>1) OUS -> (Example : homologous -> homolog)
+    -(m>1) IVE -> (Example : effective -> effect)
+    -(m>1) IZE -> (Example : bowdlerize -> bowdler)
+    """
+    def step4(self, word):
+        if word.endswith('al'):
+            word = self.replaceM1(word, 'al', '')
+        elif word.endswith('ance'):
+            word = self.replaceM1(word, 'ance', '')
+        elif word.endswith('ence'):
+            word = self.replaceM1(word, 'ence', '')
+        elif word.endswith('er'):
+            word = self.replaceM1(word, 'er', '')
+        elif word.endswith('ic'):
+            word = self.replaceM1(word, 'ic', '')
+        elif word.endswith('able'):
+            word = self.replaceM1(word, 'able', '')
+        elif word.endswith('ible'):
+            word = self.replaceM1(word, 'ible', '')
+        elif word.endswith('ant'):
+            word = self.replaceM1(word, 'ant', '')
+        elif word.endswith('ement'):
+            word = self.replaceM1(word, 'ement', '')
+        elif word.endswith('ment'):
+            word = self.replaceM1(word, 'ment', '')
+        elif word.endswith('ent'):
+            word = self.replaceM1(word, 'ent', '')
+        elif word.endswith('ion'):
+            position = word.rfind('ion')
+            base = position[:position]
+            if self.getM(base) > 1 and (self.endsWith(base, 's') or self.endsWith(base, 't')):
+                word = base
+            word = self.replaceM1(word, '', '')
+        elif word.endswith('ou'):
+            word = self.replaceM1(word, 'ou', '')
+        elif word.endswith('ism'):
+            word = self.replaceM1(word, 'ism', '')
+        elif word.endswith('ate'):
+            word = self.replaceM1(word, 'ate', '')
+        elif word.endswith('iti'):
+            word = self.replaceM1(word, 'iti', '')
+        elif word.endswith('ous'):
+            word = self.replaceM1(word, 'ous', '')
+        elif word.endswith('ive'):
+            word = self.replaceM1(word, 'ive', '')
+        elif word.endswith('ize'):
+            word = self.replaceM1(word, 'ize', '')
+        return word
