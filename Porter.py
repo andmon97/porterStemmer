@@ -386,3 +386,25 @@ class Porter:
             elif self.getM(base) > 1 and not self.cvc(base):
                 word = base
         return word
+
+    """
+        STEP 5b:
+    - (m > 1 and *d and *L) -> single letter
+    """
+    def step5b(self, word):
+        if self.getM(word) > 1 and self.doubleCons(word) and self.endsWith(word, 'l'):
+            word = word[:-1] #remove the last one
+        return word
+
+
+    # given a word as argument, returns the stem by applying the Porter algorithm
+    def getStem(self, word):
+        word = self.step1a(word)
+        word = self.step1b(word)
+        word = self.step1c(word)
+        word = self.step2(word)
+        word = self.step3(word)
+        word = self.step4(word)
+        word = self.step5a(word)
+        word = self.step5b(word)
+        return word
