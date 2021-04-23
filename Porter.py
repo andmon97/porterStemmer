@@ -1,5 +1,6 @@
 class Porter:
-
+    # UTILS
+    # check if the letter is not a vowel
     def consonant(self, letter):
         letter = letter.lower()
         if letter == 'a' or letter == 'e' or letter == 'i' or letter == 'o' or letter == 'u':
@@ -7,7 +8,7 @@ class Porter:
         else:
             return True
 
-
+    # check if the letter is a consonant
     def isConsonant(self, word, position):
         letter = word[position]
         letter = letter.lower()
@@ -19,9 +20,74 @@ class Porter:
         else:
             return False
 
-
+    # check if the letter is  a vowel
     def isVowel(self, word, i):
         return not(self.isConsonant(word, i))
+
+    """
+        Every word in the Porter form is [C](VC)^m[V], where
+        - [C] possiblie set of Consonants sequence of lenght > 0;
+        - (VC)^m sequence of Vowels and Consonants of lenght m;
+        - [V] possiblie set of Vowels sequence of lenght > 0.
+        """
+
+    # rule that check the word's form
+    def wordForm(self, word):
+        form = []
+        formStr = ''
+        for position in range(len(word)):
+            if self.isConsonant(word, position):
+                if position != 0:
+                    previous = form[-1]
+                    if previous != 'C':
+                        form.append('C')
+                else:
+                    form.append('C')
+            else:
+                if position != 0:
+                    previous = form[-1]
+                    if previous != 'V':
+                        form.append('V')
+                else:
+                    form.append('V')
+        for type in form:
+            formStr += type
+        return formStr
+
+    # obtain the lenght of the (VC) sequence from the form (the m param)
+    # m=2 => TROUBLES, PRIVATE, OATEN, ORRERY.
+    def getM(self, word):
+        form = self.wordForm(word)
+        m = form.count('VC')
+        return m
+
+    # replace the removePart with the replacePart in the word
+    def replace(self, word, removePart, replacePart):
+        position = word.rfind(removePart)
+        base = word[:position]
+        replaced = base + replacePart
+        return replaced
+
+    # replace the removePart with the replacePart in the word if M is > 0
+    def replaceM0(self, word, removePart, replacePart):
+        position = word.rfind(removePart)
+        base = word[:position]
+        if self.getM(base) > 0:
+            replaced = base + replacePart
+            return replaced
+        else:
+            return word
+
+    # replace the removePart with the replacePart in the word if M is > 1
+    def replaceM1(self, word, removePart, replacePart):
+        position = word.rfind(removePart)
+        base = word[:position]
+        if self.getM(base) > 1:
+            replaced = base + replacePart
+            return replaced
+        else:
+            return word
+
 
     """
         CONDITION PART
@@ -70,71 +136,6 @@ class Porter:
 
 
     """
-    Every word in the Porter form is [C](VC)^m[V], where
-    - [C] possiblie set of Consonants sequence of lenght > 0;
-    - (VC)^m sequence of Vowels and Consonants of lenght m;
-    - [V] possiblie set of Vowels sequence of lenght > 0.
-    """
-    # rule that check the word's form
-    def wordForm(self, word):
-        form = []
-        formStr = ''
-        for position in range(len(word)):
-            if self.isConsonant(word, position):
-                if position != 0:
-                    previous = form[-1]
-                    if previous != 'C':
-                        form.append('C')
-                else:
-                    form.append('C')
-            else:
-                if position != 0:
-                    previous = form[-1]
-                    if previous != 'V':
-                        form.append('V')
-                else:
-                    form.append('V')
-        for type in form:
-            formStr += type
-        return formStr
-
-
-    # obtain the lenght of the (VC) sequence from the form (the m param)
-    # m=2 => TROUBLES, PRIVATE, OATEN, ORRERY.
-    def getM(self, word):
-        form = self.wordForm(word)
-        m = form.count('VC')
-        return m
-
-    # replace the removePart with the replacePart in the word
-    def replace(self, word, removePart, replacePart):
-        position = word.rfind(removePart)
-        base = word[:position]
-        replaced = base + replacePart
-        return replaced
-
-    # replace the removePart with the replacePart in the word if M is > 0
-    def replaceM0(self, word, removePart, replacePart):
-        position = word.rfind(removePart)
-        base = word[:position]
-        if self.getM(base) > 0:
-            replaced = base + replacePart
-            return replaced
-        else:
-            return word
-
-    # replace the removePart with the replacePart in the word if M is > 1
-    def replaceM1(self, word, removePart, replacePart):
-        position = word.rfind(removePart)
-        base = word[:position]
-        if self.getM(base) > 1:
-            replaced = base + replacePart
-            return replaced
-        else:
-            return word
-
-
-    """
         STEP 1a:
         - SSES -> SS (Example : caresses -> caress)
         - IES -> I (Example : ponies -> poni ; ties -> ti)
@@ -154,15 +155,15 @@ class Porter:
 
     """
         STEP 1b:
-    - (m>0) EED -> EE (Example : feed -> feed ; agreed -> agree)
-    - (v) ED -> (Example : plastered -> plaster ; bled -> bled)
-    - (v) ING -> (Example : motoring -> motor ; sing -> sing)
-    - S -> (Example : cats -> cat)
+    - (m>0) EED -> EE 
+    - (v) ED -> 
+    - (v) ING -> 
+    - S -> 
     If the second or third of the rules in Step 1b is successful, the following is done:
-    - AT -> ATE (Example : conflat(ed) -> conflate)
-    - BL -> BLE (Example : troubl(ed) -> trouble)
-    - IZ -> IZE (Example : siz(ed) -> size)
-    - S -> (Example : cats -> cat)
+    - AT -> ATE 
+    - BL -> BLE 
+    - IZ -> IZE 
+    - S -> 
     - (*d and not (*L or *S or *Z)) -> single letter (Example : hopp(ing) -> hop ; tann(ed) -> tan ; fall(ing) -> fall ;
      hiss(ing) -> hiss ; fizz(ed) -> fizz)
     - (m=1 and *o) -> E (Example : fail(ing) -> fail ; fil(ing) -> file)
@@ -200,7 +201,7 @@ class Porter:
 
     """
         STEP 1c:
-    - (\*v\*) Y -> I (Example : happy -> happi ; sky -> sky)
+    - (\*v\*) Y -> I 
     """
     def step1c(self, word):
         if word.endswith('y'):
@@ -213,26 +214,26 @@ class Porter:
 
     """
         STEP 2:   
-    -(m>0) ATIONAL -> ATE (Example : relational -> relate
-    -(m>0) TIONAL -> TION (Example : conditional -> condition ; rational -> rational)
-    -(m>0) ENCI -> ENCE (Example : valenci -> valence)
-    -(m>0) ANCI -> ANCE (Example : hesitanci -> hesitance)
-    -(m>0) IZER -> IZE (Example : digitizer -> digitize)
-    -(m>0) ABLI -> ABLE (Example : conformabli -> conformable)
-    -(m>0) ALLI -> AL (Example : radicalli -> radical)
-    -(m>0) ENTLI -> ENT (differentli -> different)
-    -(m>0) ELI -> E (vileli -> vile)
-    -(m>0) OUSLI -> OUS (analogousli -> analogous)
-    -(m>0) IZATION -> IZE (vietnamization -> vietnamize)
-    -(m>0) ATION -> ATE (predication -> predicate)
-    -(m>0) ATOR -> ATE (operator -> operate)
-    -(m>0) ALISM -> AL (feudalism -> feudal)
-    -(m>0) IVENESS -> IVE (decisiveness -> decisive)
-    -(m>0) FULNESS -> FUL (hopefulness -> hopeful)
-    -(m>0) OUSNESS -> OUS (callousness -> callous)
-    -(m>0) ALITI -> AL (formaliti -> formal)
-    -(m>0) IVITI -> IVE (sensitiviti -> sensitive)
-    -(m>0) BILITI -> BLE (sensibiliti -> sensible)
+    -(m>0) ATIONAL -> ATE 
+    -(m>0) TIONAL -> TION 
+    -(m>0) ENCI -> ENCE 
+    -(m>0) ANCI -> ANCE 
+    -(m>0) IZER -> IZE 
+    -(m>0) ABLI -> ABLE 
+    -(m>0) ALLI -> AL 
+    -(m>0) ENTLI -> ENT 
+    -(m>0) ELI -> E 
+    -(m>0) OUSLI -> OUS 
+    -(m>0) IZATION -> IZE 
+    -(m>0) ATION -> ATE 
+    -(m>0) ATOR -> ATE 
+    -(m>0) ALISM -> AL 
+    -(m>0) IVENESS -> IVE 
+    -(m>0) FULNESS -> FUL 
+    -(m>0) OUSNESS -> OUS 
+    -(m>0) ALITI -> AL 
+    -(m>0) IVITI -> IVE 
+    -(m>0) BILITI -> BLE 
     """
     def step2(self, word):
         if word.endswith('ational'):
@@ -280,13 +281,13 @@ class Porter:
 
     """
         STEP 3:   
-    -(m>0) ICATE -> IC (Example : triplicate -> triplic)
-    -(m>0) ATIVE -> (Example : formative -> form)
-    -(m>0) ALIZE -> AL (Example : formalize -> formal)
-    -(m>0) ICITI -> IC (Example : electriciti -> electric))
-    -(m>0) ICAL -> IC (Example : electrical -> electric)
-    -(m>0) FUL -> (Example : hopeful -> hope)
-    -(m>0) NESS -> (Example : goodness -> good)
+    -(m>0) ICATE -> IC 
+    -(m>0) ATIVE -> 
+    -(m>0) ALIZE -> AL 
+    -(m>0) ICITI -> IC 
+    -(m>0) ICAL -> IC 
+    -(m>0) FUL -> 
+    -(m>0) NESS -> 
     """
     def step3(self, word):
         if word.endswith('icate'):
@@ -307,25 +308,25 @@ class Porter:
 
     """
         STEP 4:   
-    -(m>1) AL -> (Example : revival -> reviv)
-    -(m>1) ANCE -> (Example : allowance -> allow)
-    -(m>1) ENCE -> (Example : inference -> infer)
-    -(m>1) ER -> (Example : airliner -> airlin)
-    -(m>1) IC -> (Example : gyroscopic -> gyroscop)
-    -(m>1) ABLE -> (Example : adjustable -> adjust)
-    -(m>1) IBLE -> (Example : defensible -> defens)
-    -(m>1) ANT -> (Example : irritant -> irrit)
-    -(m>1) EMENT -> (Example : replacement -> replac)
-    -(m>1) MENT -> (Example : adjustment -> adjust)
-    -(m>1) ENT -> (Example : dependent -> depend)
-    -(m>1 and (*S or *T)) ION -> (Example : adoption -> adopt)
-    -(m>1) OU -> (Example : homologou -> homolog)
-    -(m>1) ISM -> (Example : communism -> commun)
-    -(m>1) ATE -> (Example : activate -> activ)
-    -(m>1) ITI -> (Example : angulariti -> angular)
-    -(m>1) OUS -> (Example : homologous -> homolog)
-    -(m>1) IVE -> (Example : effective -> effect)
-    -(m>1) IZE -> (Example : bowdlerize -> bowdler)
+    -(m>1) AL -> 
+    -(m>1) ANCE -> 
+    -(m>1) ENCE -> 
+    -(m>1) ER -> 
+    -(m>1) IC -> 
+    -(m>1) ABLE -> 
+    -(m>1) IBLE -> 
+    -(m>1) ANT ->
+    -(m>1) EMENT -> 
+    -(m>1) MENT -> 
+    -(m>1) ENT -> 
+    -(m>1 and (*S or *T)) ION -> 
+    -(m>1) OU -> 
+    -(m>1) ISM -> 
+    -(m>1) ATE -> 
+    -(m>1) ITI ->
+    -(m>1) OUS -> 
+    -(m>1) IVE -> 
+    -(m>1) IZE ->
     """
     def step4(self, word):
         if word.endswith('al'):
@@ -370,4 +371,18 @@ class Porter:
             word = self.replaceM1(word, 'ive', '')
         elif word.endswith('ize'):
             word = self.replaceM1(word, 'ize', '')
+        return word
+
+    """
+        STEP 5a:   
+    -(m>1) E -> 
+    -(m=1 and not *o) E -> 
+    """
+    def step5a(self, word):
+        if word.endswith('e'):
+            base = word[:-1]
+            if self.getM(base) > 1:
+                word = base
+            elif self.getM(base) > 1 and not self.cvc(base):
+                word = base
         return word
