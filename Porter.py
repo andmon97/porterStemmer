@@ -29,8 +29,7 @@ class Porter:
         - [C] possiblie set of Consonants sequence of lenght > 0;
         - (VC)^m sequence of Vowels and Consonants of lenght m;
         - [V] possiblie set of Vowels sequence of lenght > 0.
-        """
-
+    """
     # rule that check the word's form
     def wordForm(self, word):
         form = []
@@ -137,10 +136,10 @@ class Porter:
 
     """
         STEP 1a:
-        - SSES -> SS (Example : caresses -> caress)
-        - IES -> I (Example : ponies -> poni ; ties -> ti)
-        - SS -> SS (Example : caress -> caress)
-        - S -> (Example : cats -> cat)
+    - SSES -> SS 
+    - IES -> I 
+    - SS -> SS 
+    - S -> 
     """
     def step1a(self, word):
         if word.endswith('sses'):
@@ -164,9 +163,8 @@ class Porter:
     - BL -> BLE 
     - IZ -> IZE 
     - S -> 
-    - (*d and not (*L or *S or *Z)) -> single letter (Example : hopp(ing) -> hop ; tann(ed) -> tan ; fall(ing) -> fall ;
-     hiss(ing) -> hiss ; fizz(ed) -> fizz)
-    - (m=1 and *o) -> E (Example : fail(ing) -> fail ; fil(ing) -> file)
+    - (*d and not (*L or *S or *Z)) -> single letter
+    - (m=1 and *o) -> E 
 
     The rule to map to a single letter causes the removal of one of the double letter pair. The -E is put back on -AT, 
     -BL and -IZ, so that the suffixes -ATE, -BLE and -IZE can be recognised later. This E may be removed in step 4.
